@@ -46,6 +46,8 @@ public class Ingreso implements Comparable<Ingreso>{
 
     @Override
     public int compareTo(Ingreso o) {
-        return this.nivelEmergencia.compararCon(o.nivelEmergencia);
+        int porNivel = this.nivelEmergencia.compararCon(o.nivelEmergencia); // usa tu compararCon
+        if (porNivel != 0) return porNivel;
+        return this.fechaIngreso.compareTo(o.fechaIngreso); // desempate por llegada
     }
 }

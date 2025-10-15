@@ -33,7 +33,7 @@ public class ModuloUrgenciasNuevoStepDefinitions {
     @Given("que la siguiente enfermera esta registrada:")
     public void queLaSiguienteEnfermeraEstaRegistradaConCuil(List<Map<String, String>> tabla) {
         Map<String, String> fila = tabla.get(0);
-        this.enfermeraCuil = get(fila, "CUIL");
+        this.enfermeraCuil = get(fila, "Cuil");
         String nombre = get(fila, "Nombre");
         String apellido = get(fila, "Apellido");
         // Si tu clase Enfermera solo admite (nombre, apellido), conservamos ese constructor.
@@ -45,7 +45,7 @@ public class ModuloUrgenciasNuevoStepDefinitions {
     @Given("que los siguientes pacientes esten registrados:")
     public void queLosSiguientesPacientesEstenRegistrados(List<Map<String, String>> tabla) {
         for (Map<String, String> fila : tabla) {
-            String cuil = get(fila, "CUIL");
+            String cuil = get(fila, "Cuil");
             String nombre = get(fila, "Nombre");
             String apellido = get(fila, "Apellido");
             String obraSocial = get(fila, "Obra social");
@@ -82,7 +82,7 @@ public class ModuloUrgenciasNuevoStepDefinitions {
         String frecCardStr = get(fila, "Frecuencia cardiaca");
         //  String frecCardStr       = "80";
         if (isBlank(frecCardStr)) {
-            excepcionEsperada = new IllegalArgumentException("La frecuencia cardíaca es obligatoria");
+            excepcionEsperada = new IllegalArgumentException("La frecuencia cardiaca es obligatoria");
             return;
         }
 
@@ -94,13 +94,13 @@ public class ModuloUrgenciasNuevoStepDefinitions {
 
         String tensionSisStr = get(fila, "Tension sistolica");
         if (isBlank(tensionSisStr)) {
-            excepcionEsperada = new IllegalArgumentException("La tensión sistólica es obligatoria");
+            excepcionEsperada = new IllegalArgumentException("La tensión sistolica es obligatoria");
             return;
         }
 
-        String tensionDiaStr = get(fila, "Tension Diastolica");
+        String tensionDiaStr = get(fila, "Tension diastolica");
         if (isBlank(tensionDiaStr)) {
-            excepcionEsperada = new IllegalArgumentException("La tensión diastólica es obligatoria");
+            excepcionEsperada = new IllegalArgumentException("La tensión diastolica es obligatoria");
             return;
         }
 
@@ -115,8 +115,8 @@ public class ModuloUrgenciasNuevoStepDefinitions {
         Float temperatura = isBlank(temperaturaStr) ? null : parseFloat(temperaturaStr);
 
         Float frecCard = parseFloat(frecCardStr);
-       // Float frecResp = parseFloat(frecRespStr);
-        Float frecResp = parseFloat("20");
+        Float frecResp = parseFloat(frecRespStr);
+        //Float frecResp = parseFloat("20");
         Float tensionSis = parseFloat(tensionSisStr);
         Float tensionDia = parseFloat(tensionDiaStr);
 
@@ -166,7 +166,7 @@ public class ModuloUrgenciasNuevoStepDefinitions {
     @Then("la lista de espera esta ordenada segun el nivel de emergencia por cuil de la siguiente manera:")
     public void laListaOrdenadaSegunNivelPorCuil(List<Map<String, String>> tabla) {
         List<String> cuilsEsperados = tabla.stream()
-                .map(f -> get(f, "CUIL"))
+                .map(f -> get(f, "Cuil"))
                 .toList();
 
         List<String> cuilsPendientes = servicioUrgencias.obtenerIngresosPendientes()
@@ -205,4 +205,57 @@ public class ModuloUrgenciasNuevoStepDefinitions {
                 .isNotNull()
                 .containsIgnoringCase(mensajeEsperado); // sirve para “es obligatoria” y “no puede ser negativa”
     }
+
+    @Given("la lista de espera actual es:")
+    public void laListaDeEsperaActualEs(List<Map<String, String>> tabla) {
+        // Debe venir seteada por el Background
+        if (enfermera == null) {
+            throw new AssertionError("No hay enfermera inicializada desde el Background.");
+        }
+
+        for (Map<String, String> fila : tabla) {
+            String cuil     = get(fila, "Cuil");
+            String nombre   = get(fila, "Nombre");
+            String apellido = get(fila, "Apellido");
+            String nivelStr = get(fila, "Nivel de emergencia");
+
+            NivelEmergencia nivel = Arrays.stream(NivelEmergencia.values())
+                    .filter(ne -> ne.tieneNombre(nivelStr))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Nivel desconocido: " + nivelStr));
+
+            try {
+                // Si el servicio exige que el paciente exista previamente, y no existe,
+                // esto lanzará excepción. La transformamos en un error claro del Given.
+                servicioUrgencias.registrarUrgencia(
+                        cuil, enfermera, "Precargado en lista de espera",
+                        nivel, 36.8f, 72f, 16f, 120f, 80f
+                );
+            } catch (Exception e) {
+                throw new AssertionError(
+                        "No se pudo precargar el paciente " + cuil +
+                                " (" + nombre + " " + apellido + "). ", e
+                );
+            }
+        }
+    }
+
+
+    @Then("el sistema prioriza al paciente por su nivel de emergencia:")
+    public void elSistemaPriorizaAlPacientePorSuNivelDeEmergencia(List<Map<String, String>> tabla) {
+        List<String> cuilsEsperados = tabla.stream()
+                .map(f -> get(f, "Cuil"))
+                .toList();
+
+        List<String> cuilsPendientes = servicioUrgencias.obtenerIngresosPendientes()
+                .stream()
+                .map(Ingreso::getCuilPaciente)
+                .toList();
+
+        assertThat(cuilsPendientes)
+                .as("El orden de prioridad en la lista de espera no coincide con lo esperado")
+                .hasSize(cuilsEsperados.size())
+                .containsExactlyElementsOf(cuilsEsperados);
+    }
+
 }
