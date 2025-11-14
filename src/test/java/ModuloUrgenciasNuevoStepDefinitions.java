@@ -4,15 +4,13 @@ import io.cucumber.java.en.Then;
 
 import mock.DBPruebaEnMemoria;
 import org.example.app.ServicioUrgencias;
-import org.example.domain.Enfermera;
-import org.example.domain.Ingreso;
-import org.example.domain.NivelEmergencia;
-import org.example.domain.Paciente;
+import org.example.domain.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Integer.parseInt;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuloUrgenciasNuevoStepDefinitions {
@@ -38,18 +36,36 @@ public class ModuloUrgenciasNuevoStepDefinitions {
         String apellido = get(fila, "Apellido");
         // Si tu clase Enfermera solo admite (nombre, apellido), conservamos ese constructor.
         this.enfermera = new Enfermera(nombre, apellido, enfermeraCuil);
-        // Si más adelante necesitaras usar el CUIL real en el servicio, lo tenés en enfermeraCuil.
     }
 
     // Background: pacientes con columnas: CUIL | Nombre | Apellido | Obra social
     @Given("que los siguientes pacientes esten registrados:")
     public void queLosSiguientesPacientesEstenRegistrados(List<Map<String, String>> tabla) {
         for (Map<String, String> fila : tabla) {
-            String cuil = get(fila, "Cuil");
-            String nombre = get(fila, "Nombre");
-            String apellido = get(fila, "Apellido");
-            String obraSocial = get(fila, "Obra social");
-            Paciente p = new Paciente(cuil, nombre, apellido, obraSocial);
+            String cuil      = get(fila, "Cuil");
+            String nombre    = get(fila, "Nombre");
+            String apellido  = get(fila, "Apellido");
+
+            // Domicilio MANDATORIO en dominio
+            String calle     = get(fila, "Calle");
+            Integer numero   = parseInt(get(fila, "Numero"));
+            String localidad = get(fila, "Localidad");
+            Domicilio domicilio = new Domicilio(calle, numero, localidad);
+
+            // Afiliación OPCIONAL
+            String osCod     = get(fila, "Obra Social Codigo");
+            String osNom     = get(fila, "Obra Social Nombre");
+            String nroAfi    = get(fila, "Numero Afiliado");
+
+            Paciente p;
+            if (!isBlank(osCod) && !isBlank(osNom)) {
+                ObraSocial os = new ObraSocial(osCod, osNom);
+                Afiliacion afi = new Afiliacion(os, nroAfi);
+                p = new Paciente(cuil, nombre, apellido, domicilio, afi);
+            } else {
+                p = new Paciente(cuil, nombre, apellido, domicilio);
+            }
+
             dbMockeada.guardarPaciente(p);
         }
     }
