@@ -7,7 +7,7 @@ import org.example.domain.Exceptions.DomainException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public final class Usuario {
+public class Usuario {
     private final String email;
     private final String hash;        // contraseña hasheada
     private final Enfermera enfermera; // nullable
@@ -16,7 +16,7 @@ public final class Usuario {
     private static final Pattern EMAIL_RE =
             Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}$");
 
-    private Usuario(String email, String hash, Enfermera enfermera, Medico medico) {
+    Usuario(String email, String hash, Enfermera enfermera, Medico medico) {
         if ((enfermera == null) == (medico == null)) {
             // true == true  -> ambas null  | false == false -> ambas no-null
             throw DomainException.validation(

@@ -2,7 +2,6 @@ package org.example.auth.app;
 
 import mock.*;
 import org.example.auth.BCryptHasher;
-import org.example.auth.app.ServicioAuth;
 import org.example.auth.domain.Usuario;
 import org.example.domain.Enfermera;
 import org.example.domain.Medico;
@@ -12,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
 
-class ServicioAuth_SinCredenciales_Test {
+class ServicioAuthTest {
 
     MemUsuarioRepo usuarios;
     BCryptHasher hasher;
@@ -41,6 +40,14 @@ class ServicioAuth_SinCredenciales_Test {
         assertThat(u.getRol()).isEqualTo("ENFERMERA");
         assertThat(u.getCuilActor()).isEqualTo("20-32456878-7");
         // BCrypt: verificar con matches
+        assertThat(hasher.matches("secreto123", u.getHash())).isTrue();
+    }
+    @Test
+    void registrar_medico_ok() {
+        Usuario u = auth.registrarParaMedico("dr@clinica.com", "secreto123", "20-55555555-6");
+        assertThat(u.esMedico()).isTrue();
+        assertThat(u.getRol()).isEqualTo("MEDICO");
+        assertThat(u.getCuilActor()).isEqualTo("20-55555555-6");
         assertThat(hasher.matches("secreto123", u.getHash())).isTrue();
     }
 
