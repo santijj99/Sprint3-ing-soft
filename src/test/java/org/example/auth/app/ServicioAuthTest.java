@@ -34,6 +34,20 @@ class ServicioAuthTest {
     }
 
     @Test
+    void el_hash_no_es_la_password_y_matchea_con_bcrypt() {
+        var u = auth.registrarParaMedico("m@c.com", "clave1234", "20-55555555-6");
+
+        // El hash NO contiene la password en claro
+        assertThat(u.getHash()).doesNotContain("clave1234");
+
+        // Formato típico de BCrypt ($2a/$2b/…)
+        assertThat(u.getHash()).startsWith("$2");
+
+        // Verificación correcta con BCrypt (usa salt aleatorio)
+        assertThat(hasher.matches("clave1234", u.getHash())).isTrue();
+    }
+
+    @Test
     void registrar_enfermera_ok() {
         Usuario u = auth.registrarParaEnfermera("lucia@clinica.com", "secreto123", "20-32456878-7");
         assertThat(u.esEnfermera()).isTrue();
@@ -110,4 +124,24 @@ class ServicioAuthTest {
                 auth.registrarParaMedico("dr@c.com", "short", "20-55555555-6")
         ).isInstanceOf(DomainException.class).hasMessageContaining("al menos 8");
     }
+
+    @Test
+    void registro_falla_enfermera_inexistente() {
+        assertThatThrownBy(() ->
+                auth.registrarParaEnfermera("l@c.com", "secreto123", "20-00000000-0")
+        )
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("Enfermera inexistente");
+    }
+
+    @Test
+    void registro_falla_Medico_inexistente() {
+        assertThatThrownBy(() ->
+                auth.registrarParaMedico("l@c.com", "secreto123", "20-00000000-0")
+        )
+                .isInstanceOf(DomainException.class)
+                .hasMessageContaining("Médico inexistente");
+    }
+
+
 }
