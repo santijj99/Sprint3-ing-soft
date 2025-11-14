@@ -4,7 +4,7 @@ public class Paciente extends Persona {
     private Domicilio domicilio;         // mandatorio (objeto)
     private Afiliacion afiliacion;
 
-    // Sin email, sin afiliación
+    // Sin afiliación
     public Paciente(String cuil, String nombre, String apellido, Domicilio domicilio) {
         super(cuil, nombre, apellido);
         this.domicilio = domicilio == null
@@ -14,25 +14,12 @@ public class Paciente extends Persona {
         this.afiliacion = null;
     }
 
-    // Con email, sin afiliación
-    public Paciente(String cuil, String nombre, String apellido, String email, Domicilio domicilio) {
-        super(cuil, nombre, apellido, email);
-        if (domicilio == null)
-            throw org.example.domain.Exceptions.DomainException.validation("El domicilio del paciente es obligatorio");
-        this.domicilio = domicilio;
-        this.afiliacion = null;
-    }
-
     // Con afiliación opcional
     public Paciente(String cuil, String nombre, String apellido, Domicilio domicilio, Afiliacion afiliacion) {
         this(cuil, nombre, apellido, domicilio);
         this.afiliacion = afiliacion; // si no es null, Afiliacion valida obraSocial + numeroAfiliado
     }
 
-    public Paciente(String cuil, String nombre, String apellido, String email, Domicilio domicilio, Afiliacion afiliacion) {
-        this(cuil, nombre, apellido, email, domicilio);
-        this.afiliacion = afiliacion;
-    }
 
     public Domicilio getDomicilio() { return domicilio; }
     public Afiliacion getAfiliacion() { return afiliacion; }
