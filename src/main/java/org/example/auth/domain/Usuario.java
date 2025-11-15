@@ -1,11 +1,11 @@
 package org.example.auth.domain;
 
 import org.example.domain.Enfermera;
+import org.example.domain.Guard;
 import org.example.domain.Medico;
 import org.example.domain.Exceptions.DomainException;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 public class Usuario {
     private final String email;
@@ -13,8 +13,6 @@ public class Usuario {
     private final Enfermera enfermera; // nullable
     private final Medico medico;       // nullable
 
-    private static final Pattern EMAIL_RE =
-            Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}$");
 
     Usuario(String email, String hash, Enfermera enfermera, Medico medico) {
         if ((enfermera == null) == (medico == null)) {
@@ -22,8 +20,8 @@ public class Usuario {
             throw DomainException.validation(
                     "Usuario debe asociarse a médico o enfermera (exactamente uno)");
         }
-        this.email = requireEmailValido(email);
-        this.hash  = requireNotBlank(hash, "Hash de contraseña requerido");
+        this.email = Guard.requireEmailValido(email);
+        this.hash  = Guard.notBlank(hash, "Hash de contraseña requerido");
         this.enfermera = enfermera;
         this.medico = medico;
     }
@@ -54,13 +52,5 @@ public class Usuario {
     public String getRol() { return esMedico() ? "MEDICO" : "ENFERMERA"; }
     public String getCuilActor() { return esMedico() ? medico.getCuil() : enfermera.getCuil(); }
 
-    private static String requireEmailValido(String email) {
-        if (email == null || email.isBlank() || !EMAIL_RE.matcher(email).matches())
-            throw DomainException.validation("Email inválido");
-        return email.trim();
-    }
-    private static String requireNotBlank(String v, String msg) {
-        if (v == null || v.isBlank()) throw DomainException.validation(msg);
-        return v.trim();
-    }
+
 }

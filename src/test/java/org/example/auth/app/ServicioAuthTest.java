@@ -13,18 +13,18 @@ import static org.assertj.core.api.Assertions.*;
 
 class ServicioAuthTest {
 
-    MemUsuarioRepo usuarios;
+    DBUsuarioEnMemoria usuarios;
     BCryptHasher hasher;
-    MemEnfermeraRepo enfRepo;
-    MemMedicoRepo medRepo;
+    DBEnfermeraEnMemoria enfRepo;
+    DBMedicoEnMemoria medRepo;
     ServicioAuth auth;
 
     @BeforeEach
     void setUp() {
-        usuarios = new MemUsuarioRepo();
+        usuarios = new DBUsuarioEnMemoria();
         hasher   = new BCryptHasher(4);
-        enfRepo  = new MemEnfermeraRepo();
-        medRepo  = new MemMedicoRepo();
+        enfRepo  = new DBEnfermeraEnMemoria();
+        medRepo  = new DBMedicoEnMemoria();
 
         // seed
         enfRepo.guardar(new Enfermera("Lucia", "Paz", "20-32456878-7"));

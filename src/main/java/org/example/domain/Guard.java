@@ -3,8 +3,13 @@ package org.example.domain;
 
 import org.example.domain.Exceptions.DomainException;
 
+import java.util.regex.Pattern;
+
 public final class Guard {
     private Guard() {}
+
+    private static final Pattern EMAIL_RE =
+            Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,63}$");
 
     public static String notBlank(String val, String message) {
         if (val == null || val.isBlank()) {
@@ -32,5 +37,11 @@ public final class Guard {
         int dvReal = Character.digit(s.charAt(10), 10);
         if (dv != dvReal) throw DomainException.validation(message).withContext("valor", cuil);
         return s.substring(0,2) + "-" + s.substring(2,10) + "-" + s.substring(10);
+    }
+
+    public static String requireEmailValido(String email) {
+        if (email == null || email.isBlank() || !EMAIL_RE.matcher(email).matches())
+            throw DomainException.validation("Email inválido");
+        return email.trim();
     }
 }
