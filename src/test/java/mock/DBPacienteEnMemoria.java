@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class DBPruebaEnMemoria implements RepositorioPacientes {
+public class DBPacienteEnMemoria implements RepositorioPacientes {
     private Map<String,Paciente> pacientes;
 
-    public DBPruebaEnMemoria() {
+    public DBPacienteEnMemoria() {
         this.pacientes = new HashMap<>();
     }
 

@@ -51,4 +51,11 @@ class GuardCuilTest {
                 .isInstanceOf(DomainException.class);
     }
 
+    @Test
+    void email_invalido() {
+        assertThatThrownBy(() ->
+                Guard.requireEmailValido("mal_email")
+        ).isInstanceOf(DomainException.class).hasMessageContaining("Email inválido");
+    }
+
 }

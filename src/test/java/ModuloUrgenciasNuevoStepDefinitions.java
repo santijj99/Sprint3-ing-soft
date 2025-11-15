@@ -2,7 +2,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
 
-import mock.DBPruebaEnMemoria;
+import mock.DBPacienteEnMemoria;
 import org.example.app.ServicioUrgencias;
 import org.example.domain.*;
 
@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ModuloUrgenciasNuevoStepDefinitions {
 
-    private final DBPruebaEnMemoria dbMockeada;
+    private final DBPacienteEnMemoria dbMockeada;
     private final ServicioUrgencias servicioUrgencias;
 
     private Enfermera enfermera;       // Objeto enfermera usado por el servicio
@@ -23,7 +23,7 @@ public class ModuloUrgenciasNuevoStepDefinitions {
     private Exception excepcionEsperada;
 
     public ModuloUrgenciasNuevoStepDefinitions() {
-        this.dbMockeada = new DBPruebaEnMemoria();
+        this.dbMockeada = new DBPacienteEnMemoria();
         this.servicioUrgencias = new ServicioUrgencias(dbMockeada);
     }
 

@@ -5,7 +5,7 @@ import org.example.domain.Enfermera;
 
 import java.util.*;
 
-public class MemEnfermeraRepo implements EnfermeraRepositorio {
+public class DBEnfermeraEnMemoria implements EnfermeraRepositorio {
     private final Map<String, Enfermera> porCuil = new HashMap<>();
     public void guardar(Enfermera e) { porCuil.put(e.getCuil(), e); }
     @Override public Optional<Enfermera> buscarPorCuil(String cuil) {

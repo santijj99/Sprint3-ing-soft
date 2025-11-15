@@ -1,7 +1,7 @@
 package org.example.app;
 
 import mock.DBObrasSocialesEnMemoria;
-import mock.DBPruebaEnMemoria;
+import mock.DBPacienteEnMemoria;
 import org.example.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,13 +10,13 @@ import static org.assertj.core.api.Assertions.*;
 
 class AltaPacienteServiceTest {
 
-    DBPruebaEnMemoria repoPac;
+    DBPacienteEnMemoria repoPac;
     DBObrasSocialesEnMemoria repoOS;
     AltaPacienteService alta;
 
     @BeforeEach
     void setUp() {
-        repoPac = new DBPruebaEnMemoria();
+        repoPac = new DBPacienteEnMemoria();
         repoOS  = new DBObrasSocialesEnMemoria();
         // catálogo con OSDE
         repoOS.guardar(new ObraSocial("OSDE", "OSDE"));

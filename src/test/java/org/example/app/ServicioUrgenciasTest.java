@@ -1,6 +1,6 @@
 package org.example.app;
 
-import mock.DBPruebaEnMemoria;
+import mock.DBPacienteEnMemoria;
 import org.example.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,13 +9,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class ServicioUrgenciasTest {
 
-    private DBPruebaEnMemoria db;
+    private DBPacienteEnMemoria db;
     private ServicioUrgencias servicio;
     private Enfermera enfermera;
 
     @BeforeEach
     void setUp() {
-        db = new DBPruebaEnMemoria();
+        db = new DBPacienteEnMemoria();
         servicio = new ServicioUrgencias(db);
         // CUIL válido (dígito verificador correcto)
         enfermera = new Enfermera("Lucia", "Paz", "20-32456878-7");
