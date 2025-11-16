@@ -32,6 +32,7 @@ public class ServicioAuth {
     public Usuario registrarParaEnfermera(String email, String password, String cuilEnfermera) {
         validarEmail(email);
         validarPassword(password);
+        validarCuil(cuilEnfermera);
 
         Enfermera e = enfRepo.buscarPorCuil(cuilEnfermera)
                 .orElseThrow(() -> DomainException.validation("Enfermera inexistente"));
@@ -81,5 +82,9 @@ public class ServicioAuth {
             throw DomainException.validation("Contraseña es obligatoria");
         if (password.length() < 8)
             throw DomainException.validation("La contraseña debe tener al menos 8 caracteres");
+    }
+    private static void validarCuil(String cuil) {
+        if (cuil == null || cuil.isBlank())
+            throw DomainException.validation("CUIL es obligatorio");
     }
 }
